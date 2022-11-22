@@ -1,0 +1,16 @@
+
+LUA_INCLUDE = lua-5.4.4/src/
+LUA_LIB = lua-5.4.4/src/liblua.a
+
+CC = gcc
+
+LIBS = -ldl -lm
+CFLAGS  = -O2 -Wall -pedantic -mavx2
+#CFLAGS = -O2 -Wall -pedantic
+
+
+SRCS = zadb.c rbtr.c zadbdata.c
+MAIN = zadb
+
+all:
+        $(CC) $(CFLAGS) -I$(LUA_INCLUDE) $(SRCS) $(LUA_LIB) -o $(MAIN) $(LIBS)
