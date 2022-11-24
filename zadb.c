@@ -742,8 +742,9 @@ int mainLoop(int port) {
         fprintf(stderr, "za_socket_init failed\n");
     }
     gettimeofday(&g_starttime, 0);
+    int timeout = 1000;
     while (1) {
-        int ready = poll(pfds, nfds, 100);
+        int ready = poll(pfds, nfds, timeout);
         if ((ready < 0) && (errno != EINTR)) {
             perror("listen failed");
             return SOCKET_LOOP_ERR;
@@ -800,6 +801,12 @@ int mainLoop(int port) {
             db_stat_set = 0;
             db_stat_del = 0;
             db_stat_upd = 0;
+            timeout = 1000;
+        } else {
+            timeout = timeout - timediff / 1000;
+            if (timeout < 0) {
+                timeout = 0;
+            }
         }
     }
 }
