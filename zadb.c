@@ -772,9 +772,13 @@ int mainLoop(int port) {
         gettimeofday(&g_endtime, 0);
         timediff = timeval_diff(&g_endtime, &g_starttime);
         if (timediff > 1000000) {
-            fprintf(stderr, "Requests %d per second malloccounter=%lld db_get=%lld db_set=%lld db_del=%lld db_upd=%lld\n", requests, malloccounter, db_stat_get, db_stat_set, db_stat_del, db_stat_upd);
+            fprintf(stderr, "Req_sec=%8d mem_alloc=%8lld db_get_sec=%8lld db_set_sec=%8lld db_del_sec=%8lld db_upd_sec=%8lld\n", requests, malloccounter, db_stat_get, db_stat_set, db_stat_del, db_stat_upd);
             gettimeofday(&g_starttime, 0);
             requests = 0;
+            db_stat_get = 0;
+            db_stat_set = 0;
+            db_stat_del = 0;
+            db_stat_upd = 0;
         }
     }
 }
