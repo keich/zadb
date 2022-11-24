@@ -46,7 +46,6 @@ zadbDataKey zadbKeyNew(const char *table, ZADB_DATA_TYPE table_size, const char*
 void zadbKeyGet(zadbDataKey in, char **table, ZADB_DATA_TYPE *table_size, char **key, ZADB_DATA_TYPE *key_size, char ** field, ZADB_DATA_TYPE *field_size);
 void zadbKeyFree(zadbDataKey d);
 
-int zadbKeyCompare(void *a, void *b);
 int zadbKeyFieldCompare(void *a, void *b);
 
 #endif /* ZADBDATA_H_ */

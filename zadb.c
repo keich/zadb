@@ -164,6 +164,24 @@ const char * luaToString(lua_State *L, int index, size_t * size) {
 }
 
 /*
+ * Helper function. Compare two string
+ */
+int isStringEqual(const char *s1, size_t size1, const char *s2, size_t size2) {
+    if(size1 != size2){
+        return 0;
+    }
+    register unsigned char u1, u2;
+    while (size1-- > 0) {
+        u1 = (unsigned char) *s1++;
+        u2 = (unsigned char) *s2++;
+        if (u1 != u2)
+            return 0;
+    }
+    return 1;
+}
+
+
+/*
  * Used for debug. Print all keys and values from red-black tree.
  */
 int databasePrintAll(lua_State *L) {
@@ -317,10 +335,10 @@ int databaseHGetall(lua_State *L) {
     iterator = rbtScan(rbtHandle, from);
     while (iterator != NULL) {
         rbtKeyValue(rbtHandle, iterator, (void *) &zdbkey, (void *) &zdbval);
-        if (zadbKeyCompare(from, zdbkey)) {
+        zadbKeyGet(zdbkey, &table, &table_size, &key, &key_size, &field, &field_size);
+        if (!isStringEqual(o_table, o_table_size, table, table_size) || !isStringEqual(o_key, o_key_size, key, key_size)) {
             break;
         }
-        zadbKeyGet(zdbkey, &table, &table_size, &key, &key_size, &field, &field_size);
         zadbValGet(zdbval, &val, &val_size, &num, &isStr);
         lua_pushlstring(L, field, field_size);
         if (isStr) {
@@ -366,7 +384,9 @@ int databaseHDelall(lua_State *L) {
         return 1;
     }
 
+    char * table, *key, *field;
     size_t o_table_size, o_key_size;
+    ZADB_DATA_TYPE table_size, key_size, field_size;
     zadbDataKey from, zdbkey;
     zadbDataVal zdbval;
 
@@ -385,7 +405,8 @@ int databaseHDelall(lua_State *L) {
     iterator = rbtScan(rbtHandle, from);
     while (iterator != NULL) {
         rbtKeyValue(rbtHandle, iterator, (void *) &zdbkey, (void *) &zdbval);
-        if (zadbKeyCompare(from, zdbkey)) {
+        zadbKeyGet(zdbkey, &table, &table_size, &key, &key_size, &field, &field_size);
+        if (!isStringEqual(o_table, o_table_size, table, table_size) || !isStringEqual(o_key, o_key_size, key, key_size)) {
             break;
         }
         zadbKeyFree(zdbkey);

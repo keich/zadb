@@ -1,3 +1,4 @@
+
 /*
 
 MIT License
@@ -178,18 +179,6 @@ int zadbKeyCompareStr(const char *key1, const size_t key1_size, const char *key2
         return 1;
     }
     return strncmp1(key1, key2, key1_size);
-}
-
-int zadbKeyCompare(void *a, void *b) {
-    zadbKey *key1 = (zadbKey*) a;
-    zadbKey *key2 = (zadbKey*) b;
-
-    int ret = zadbKeyCompareStr(key1->table, key1->table_size, key2->table, key2->table_size);
-    if (ret) {
-        return ret;
-    }
-
-    return zadbKeyCompareStr(key1->key, key1->key_size, key2->key, key2->key_size);
 }
 
 int zadbKeyFieldCompare(void *a, void *b) {
