@@ -214,7 +214,6 @@ int databasePrintAll(lua_State *L) {
  */
 int databaseHGet_(lua_State *L, int delete) {
     if (lua_gettop(L) != 3 || !lua_isstring(L, 1) || !lua_isstring(L, 2) || !lua_isstring(L, 3)) {
-        lua_settop(L, 0);
         lua_pushnil(L);
         return 1;
     }
@@ -231,7 +230,6 @@ int databaseHGet_(lua_State *L, int delete) {
     const char * o_field = luaToString(L, 3, &o_field_size);
 
     if (o_table == NULL || o_table_size == 0 || o_key == NULL || o_key_size == 0 || o_field == NULL || o_field_size == 0) {
-        lua_settop(L, 0);
         lua_pushnil(L);
         return 1;
     }
@@ -308,7 +306,6 @@ int databaseHDel(lua_State *L) {
  */
 int databaseHGetall(lua_State *L) {
     if (lua_gettop(L) != 2 || !lua_isstring(L, 1) || !lua_isstring(L, 2)) {
-        lua_settop(L, 0);
         lua_createtable(L, 0, 0);
         return 1;
     }
@@ -324,12 +321,10 @@ int databaseHGetall(lua_State *L) {
     const char * o_key = luaToString(L, 2, &o_key_size);
 
     if (o_table == NULL || o_table_size == 0 || o_key == NULL || o_key_size == 0) {
-        lua_settop(L, 0);
         lua_createtable(L, 0, 0);
         return 1;
     }
     from = zadbKeyNew(o_table, o_table_size, o_key, o_key_size, NULL, 0, 1);
-    lua_settop(L, 0);
     lua_createtable(L, 0, 10);
     RbtIterator iterator;
     iterator = rbtScan(rbtHandle, from);
@@ -379,7 +374,6 @@ int databaseHGetall(lua_State *L) {
  */
 int databaseHDelall(lua_State *L) {
     if (lua_gettop(L) != 2 || !lua_isstring(L, 1) || !lua_isstring(L, 2)) {
-        lua_settop(L, 0);
         lua_createtable(L, 0, 0);
         return 1;
     }
@@ -394,12 +388,10 @@ int databaseHDelall(lua_State *L) {
     const char * o_key = luaToString(L, 2, &o_key_size);
 
     if (o_table == NULL || o_table_size == 0 || o_key == NULL || o_key_size == 0) {
-        lua_settop(L, 0);
         lua_createtable(L, 0, 0);
         return 1;
     }
     from = zadbKeyNew(o_table, o_table_size, o_key, o_key_size, NULL, 0, 1);
-    lua_settop(L, 0);
     lua_createtable(L, 0, 0);
     RbtIterator iterator;
     iterator = rbtScan(rbtHandle, from);
@@ -451,7 +443,6 @@ int databaseHSet(lua_State *L) {
     const char * o_key = luaToString(L, 2, &o_key_size);
 
     if (o_table == NULL || o_table_size == 0 || o_key == NULL || o_key_size == 0) {
-        lua_settop(L, 0);
         return 0;
     }
 
@@ -485,7 +476,6 @@ int databaseHSet(lua_State *L) {
         }
         lua_pop(L, 1);
     }
-    lua_settop(L, 0);
     return 0;
 }
 
