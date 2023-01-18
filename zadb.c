@@ -138,7 +138,6 @@ const char * luaToString(lua_State *L, int index, size_t * size) {
     case LUA_TNUMBER:
         lua_pushvalue(L, index);
         out = lua_tolstring(L, -1, size);
-        lua_pop(L, 1);
         break;
     case LUA_TSTRING:
         out = lua_tolstring(L, index, size);
