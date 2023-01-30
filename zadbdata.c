@@ -160,17 +160,6 @@ void zadbKeyFree(zadbDataKey d) {
     }
 }
 
-int strncmp1(const char *s1, const char *s2, register size_t n) {
-    register unsigned char u1, u2;
-    while (n-- > 0) {
-        u1 = (unsigned char) *s1++;
-        u2 = (unsigned char) *s2++;
-        if (u1 != u2)
-            return u1 - u2;
-    }
-    return 0;
-}
-
 int zadbKeyCompareStr(const char *key1, const size_t key1_size, const char *key2, const size_t key2_size) {
     if (key1_size < key2_size) {
         return -1;
@@ -178,7 +167,7 @@ int zadbKeyCompareStr(const char *key1, const size_t key1_size, const char *key2
     if (key1_size > key2_size) {
         return 1;
     }
-    return strncmp1(key1, key2, key1_size);
+    return memcmp(key1, key2, key1_size);
 }
 
 int zadbKeyFieldCompare(void *a, void *b) {
