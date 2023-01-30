@@ -771,7 +771,7 @@ int mainLoop(int port) {
             exit(SOCKET_LOOP_ERR);
         }
         timediff = difftime(etime.tv_sec,stime.tv_sec)*1e9 +  etime.tv_nsec - stime.tv_nsec;
-        if (timediff > 1000000) {
+        if (timediff > 1000000000) {
             fprintf(stderr, "Req_sec=%8d mem_alloc=%8lld db_get_sec=%8lld db_set_sec=%8lld db_del_sec=%8lld db_upd_sec=%8lld\n", requests, malloccounter, db_stat_get, db_stat_set, db_stat_del, db_stat_upd);
             if (clock_gettime(CLOCK_REALTIME, &stime) == -1) {
                 perror("clock_gettime");
