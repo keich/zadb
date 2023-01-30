@@ -33,13 +33,11 @@ SOFTWARE.
 #include <assert.h>
 #include <poll.h>
 #include <unistd.h>
-#include <netinet/ip.h>
-#include <sys/select.h>
 #include <errno.h>
 #include <arpa/inet.h>
-#include <sys/time.h>
 #include "rbtr.h"
 #include "zadbdata.h"
+#include <time.h>
 
 #define DEFAULT_PORT 7000
 #define SOCKET_CLIENT_BUFFER 256000
@@ -49,27 +47,10 @@ RbtHandle *rbtHandle;
 lua_State *luaState;
 lua_State *luaStateThread;
 
-struct timeval g_starttime, g_endtime;
-long long timediff = 0;
 long long db_stat_set = 0;
 long long db_stat_get = 0;
 long long db_stat_upd = 0;
 long long db_stat_del = 0;
-
-/*
- * timeval_diff used for get difference between two timeeval.
- * Used with gettimeofday
- */
-long long timeval_diff(struct timeval *end_time, struct timeval *start_time) {
-    static struct timeval temp_diff;
-    temp_diff.tv_sec = end_time->tv_sec - start_time->tv_sec;
-    temp_diff.tv_usec = end_time->tv_usec - start_time->tv_usec;
-    if (temp_diff.tv_usec < 0) {
-        temp_diff.tv_usec += 1000000;
-        temp_diff.tv_sec -= 1;
-    }
-    return 1000000LL * temp_diff.tv_sec + temp_diff.tv_usec;
-}
 
 /*
  * Print all keys and values from red-black tree to stdout.
@@ -716,6 +697,8 @@ extern long long  malloccounter;
  *
  */
 int mainLoop(int port) {
+    long long timediff = 0;
+    struct timespec stime = {0, 0}, etime = {0, 0};
     int requests = 0;
     char buf[SOCKET_CLIENT_BUFFER];
     struct sockaddr_in address;
@@ -730,7 +713,10 @@ int mainLoop(int port) {
     if (socketInit(&pfds[MASTER_SOCKET_IDX].fd, port)) {
         fprintf(stderr, "za_socket_init failed\n");
     }
-    gettimeofday(&g_starttime, 0);
+    if (clock_gettime(CLOCK_REALTIME, &stime) == -1) {
+        perror("clock_gettime");
+        exit(SOCKET_LOOP_ERR);
+    }
     int timeout = 1000;
     while (1) {
         int ready = poll(pfds, nfds, timeout);
@@ -780,11 +766,17 @@ int mainLoop(int port) {
                 }
             }
         }
-        gettimeofday(&g_endtime, 0);
-        timediff = timeval_diff(&g_endtime, &g_starttime);
+        if (clock_gettime(CLOCK_REALTIME, &etime) == -1) {
+            perror("clock_gettime");
+            exit(SOCKET_LOOP_ERR);
+        }
+        timediff = difftime(etime.tv_sec,stime.tv_sec)*1e9 +  etime.tv_nsec - stime.tv_nsec;
         if (timediff > 1000000) {
             fprintf(stderr, "Req_sec=%8d mem_alloc=%8lld db_get_sec=%8lld db_set_sec=%8lld db_del_sec=%8lld db_upd_sec=%8lld\n", requests, malloccounter, db_stat_get, db_stat_set, db_stat_del, db_stat_upd);
-            gettimeofday(&g_starttime, 0);
+            if (clock_gettime(CLOCK_REALTIME, &stime) == -1) {
+                perror("clock_gettime");
+                exit(SOCKET_LOOP_ERR);
+            }
             requests = 0;
             db_stat_get = 0;
             db_stat_set = 0;
