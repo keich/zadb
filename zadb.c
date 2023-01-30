@@ -838,9 +838,10 @@ int initLua() {
 
 int main(int argc, char **argv) {
     int port = DEFAULT_PORT;
+    char *ptr;
     for (int i = 1; i < argc - 1; i++) {
         if (!strcmp(argv[i], "-port")) {
-            port = atoi(argv[i + 1]);
+            port = strtol(argv[i + 1], &ptr, 10);
             break;
         }
     }
